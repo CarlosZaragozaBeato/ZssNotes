@@ -1,0 +1,15 @@
+<head>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/vextab@3.0.6/dist/main.prod.min.js"/>
+    <script src="'/js/TabGenerator.js' %}"></script>
+</head>
+
+<div id="tab-container"></div>
+<script>
+    const tab = new TabGenerator('tab-container', {
+        strings: 6,
+        measures: 1,
+        spaceBetweenStrings: 30
+    });
+</script>
