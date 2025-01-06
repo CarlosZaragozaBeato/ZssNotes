@@ -3,5 +3,20 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-    <p>This is the home page of the site.</p>
+
+<div id="tab-container"></div>
+{% comment %} <button onclick="tab.addMeasure()">Add Measure</button>
+<button onclick="tab.clear()">Clear</button> {% endcomment %}
+
+
+{% load static %}  <!-- Load static template tag -->
+<script src="{% static '/js/TabGenerator.js' %}"></script>
+<script>
+    const tab = new TabGenerator('tab-container', {
+        strings: 6,
+        measures: 1,
+        spaceBetweenStrings: 30
+    });
+</script>
+
 {% endblock %}
