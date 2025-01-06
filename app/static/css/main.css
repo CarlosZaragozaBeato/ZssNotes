@@ -1,0 +1,80 @@
+/* Import component styles */
+@import 'components/navbar.css';
+/*@import 'components/button.css';
+@import 'components/card.css'; */
+
+/* Import page-specific styles */
+@import 'pages/home.css';
+@import 'pages/library.css';
+@import 'reset.css';
+
+
+/* Global styles */
+
+/* COLORS */
+:root {
+    /* Primary Colors */
+    --color-white: #FFFFFF;
+    --color-black: #000000;
+
+    /* Shades of Black */
+    --color-black-light: #333333;
+    --color-black-medium: #666666;
+    --color-black-dark: #111111;
+
+    /* Shades of White */
+    --color-white-light: #F8F8F8;
+    --color-white-medium: #E0E0E0;
+    --color-white-dark: #D1D1D1;
+
+    /* Text Colors */
+    --color-text-primary: #000000;
+    --color-text-secondary: #333333;
+    --color-text-muted: #666666;
+
+    /* Background Colors */
+    --color-bg-primary: #FFFFFF;
+    --color-bg-secondary: #F8F8F8;
+    --color-bg-tertiary: #E0E0E0;
+
+    /* Border Colors */
+    --color-border-light: #D1D1D1;
+    --color-border-dark: #333333;
+
+    /* Shadows */
+    --color-shadow-light: rgba(0, 0, 0, 0.1);
+    --color-shadow-dark: rgba(0, 0, 0, 0.3);
+
+    /*Login*/
+    --login_bg :#525B44;
+}
+
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    line-height: 1.6;
+}
+
+/* Backgrounds */
+.bg-white { background-color: var(--color-white); }
+.bg-black { background-color: var(--color-black); }
+.bg-light { background-color: var(--color-white-light); }
+.bg-medium { background-color: var(--color-white-medium); }
+.bg-dark { background-color: var(--color-white-dark); }
+
+/* Text Colors */
+.text-primary { color: var(--color-text-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-muted { color: var(--color-text-muted); }
+
+/* Borders */
+.border-light { border: 1px solid var(--color-border-light); }
+.border-dark { border: 1px solid var(--color-border-dark); }
+
+/* Shadows */
+.shadow-light { box-shadow: 0px 2px 5px var(--color-shadow-light); }
+.shadow-dark { box-shadow: 0px 4px 10px var(--color-shadow-dark); }
+
+
