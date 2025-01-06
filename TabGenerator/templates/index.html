@@ -4,13 +4,23 @@
     <script src="../js/TabGenerator.js"></script>
 </head>
 
-<div id="tab-container"></div>
+<main>
+    <div class="container">
+        <div id="tab-container"></div>
+    </div>
+
+    <div class="options">
+        <div id="settings-container"></div>
+        <button onclick="tab.addMeasure()">ADD</button>
+    </div>
+
+</main>
 <script>
-    const tab = new TabGenerator('tab-container', {
+    const tab = new TabGenerator('tab-container', "settings-container",{
         strings: 6,
-        measures: 1,
-        spaceBetweenStrings: 30
+        measures: 0,
+        spaceBetweenStrings: 30,
+        svgClass: 'custom-tab-class' // Custom class for SVG elements
+
     });
-
-
 </script>

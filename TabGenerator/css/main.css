@@ -71,5 +71,43 @@ body {
 .shadow-dark { box-shadow: 0px 4px 10px var(--color-shadow-dark); }
 
 
+main {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+.container{
+    width:100%;
+    display: flex;
+}
+#tab-container{
+    width: 100%;
+    margin-top:50px;
+}
+#settings-container{
+    width: 50%;
+    display: flex;
+    gap:1rem;
+}
+.fret-button{
+    padding:10px;
+    background-color: black;
+    color:white;
+    border-radius: 10px;
+}
+.options {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #f9f9f9; /* Adjust the background color as needed */
+    padding: 10px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.8); /* Optional shadow for a lifted effect */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000; /* Ensures it stays above other content */
+}
+
 
 
