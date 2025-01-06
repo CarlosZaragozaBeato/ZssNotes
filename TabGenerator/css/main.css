@@ -1,11 +1,4 @@
 /* Import component styles */
-@import 'components/navbar.css';
-/*@import 'components/button.css';
-@import 'components/card.css'; */
-
-/* Import page-specific styles */
-@import 'pages/home.css';
-@import 'pages/library.css';
 @import 'reset.css';
 
 
