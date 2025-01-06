@@ -11,15 +11,149 @@ class TabGenerator {
             svgClass: 'guitar-tab', // Default class for SVGs
             ...options,
         };
-
         this.state = {
             tabs: [],
         };
-
+        this.dragState = {
+            isDragging: false,
+            currentFret: null,
+            currentElement: null
+        };
         this.svg_state = [];
 
         this.init();
+        this.setupDragAndDrop();
     }
+    setupDragAndDrop() {
+        // Make fret buttons draggable
+        const buttons = this.settings.getElementsByClassName('fret-button');
+        Array.from(buttons).forEach(button => {
+            button.draggable = true;
+            button.addEventListener('dragstart', (e) => this.handleDragStart(e));
+            button.addEventListener('dragend', () => this.handleDragEnd());
+        });
+
+        // Make SVG areas droppable
+        this.container.addEventListener('dragover', (e) => this.handleDragOver(e));
+        this.container.addEventListener('drop', (e) => this.handleDrop(e));
+    }
+
+    handleDragStart(e) {
+        this.dragState.isDragging = true;
+        this.dragState.currentFret = e.target.dataset.fret;
+        e.dataTransfer.setData('text/plain', e.target.dataset.fret);
+        e.dataTransfer.effectAllowed = 'move';
+    }
+
+    handleDragEnd() {
+        this.dragState.isDragging = false;
+        this.dragState.currentFret = null;
+    }
+
+    handleDragOver(e) {
+        e.preventDefault();
+        if (this.dragState.isDragging) {
+            // Show visual feedback
+            const position = this.calculateNotePosition(e);
+            this.showDropPreview(position);
+        }
+    }
+
+    handleDrop(e) {
+        e.preventDefault();
+        const fret = e.dataTransfer.getData('text/plain');
+        const position = this.calculateNotePosition(e);
+        if (position) {
+            this.addNote(position.measureIndex, position.stringIndex, fret, position.x);
+        }
+        
+        this.hideDropPreview();
+    }
+
+    calculateNotePosition(e) {
+        const rect = this.container.getBoundingClientRect();
+        const mouseY = e.clientY - rect.top;
+        const mouseX = e.clientX - rect.left;
+    
+        // Snap to nearest line position
+        const measureHeight = this.options.fretHeight + 10;
+        const measureIndex = Math.floor(mouseY / measureHeight);
+        const relativeY = mouseY % measureHeight;
+        const stringIndex = Math.round(relativeY / this.options.spaceBetweenStrings);
+    
+        // Snap X to a grid
+        const gridSize = 40; // Adjust this value to change horizontal spacing
+        const snappedX = Math.round(mouseX / gridSize) * gridSize;
+    
+        return {
+            measureIndex,
+            stringIndex,
+            x: snappedX,
+            y: relativeY
+        };
+    }
+
+    addNote(measureIndex, stringIndex, fret, x) {
+        if (measureIndex < 0 || measureIndex >= this.options.measures ||
+            stringIndex < 0 || stringIndex >= this.options.lines) {
+            return;
+        }
+
+        const svg = this.container.getElementsByClassName(this.options.svgClass)[measureIndex];
+        
+        // Create note circle
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", x);
+        circle.setAttribute("cy", stringIndex * this.options.spaceBetweenStrings);
+        circle.setAttribute("r", 10);
+        circle.setAttribute("fill", "#000");
+
+        // Create text for fret number
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", x);
+        text.setAttribute("y", stringIndex * this.options.spaceBetweenStrings + 5);
+        text.setAttribute("text-anchor", "middle");
+        text.setAttribute("fill", "white");
+        text.setAttribute("font-size", "12px");
+        text.textContent = fret;
+
+        svg.appendChild(circle);
+        svg.appendChild(text);
+
+        // Store note in state
+        this.svg_state[measureIndex].tabs.push({
+            stringIndex,
+            fret,
+            x,
+            elements: { circle, text }
+        });
+    }
+
+    showDropPreview(position) {
+        // Remove existing preview
+        this.hideDropPreview();
+
+        if (position.measureIndex >= 0 && position.stringIndex >= 0) {
+            const preview = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            preview.setAttribute("cx", position.x);
+            preview.setAttribute("cy", position.stringIndex * this.options.spaceBetweenStrings);
+            preview.setAttribute("r", 10);
+            preview.setAttribute("fill", "rgba(0,0,0,0.2)");
+            preview.classList.add("drop-preview");
+
+            const svg = this.container.getElementsByClassName(this.options.svgClass)[position.measureIndex];
+            svg.appendChild(preview);
+        }
+    }
+
+    hideDropPreview() {
+        const previews = this.container.getElementsByClassName("drop-preview");
+        Array.from(previews).forEach(preview => preview.remove());
+    }
+
+
+
+
 
     init() {
         this.container.style.position = "relative";

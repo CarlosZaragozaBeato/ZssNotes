@@ -11,7 +11,7 @@
 
     <div class="options">
         <div id="settings-container"></div>
-        <button onclick="tab.addMeasure()">ADD</button>
+        <button class="add_measure" onclick="tab.addMeasure()">ADD</button>
     </div>
 
 </main>
@@ -21,6 +21,6 @@
         measures: 0,
         spaceBetweenStrings: 30,
         svgClass: 'custom-tab-class' // Custom class for SVG elements
-
     });
+    tab.addMeasure()
 </script>

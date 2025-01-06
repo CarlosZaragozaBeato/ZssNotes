@@ -102,7 +102,7 @@ main {
     width: 100%;
     background-color: #f9f9f9; /* Adjust the background color as needed */
     padding: 10px;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.8); /* Optional shadow for a lifted effect */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8); /* Optional shadow for a lifted effect */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -111,3 +111,10 @@ main {
 
 
 
+.add_measure{
+    background-color: var(--color-black-light);
+    color:var(--color-border-light);
+    padding:10px 0px;
+    width: 150px;
+    font-weight: bold;
+}
