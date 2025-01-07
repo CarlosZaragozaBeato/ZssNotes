@@ -173,14 +173,14 @@ class TabGenerator {
       "circle"
     );
     circle.setAttribute("cx", x);
-    circle.setAttribute("cy", stringIndex * this.options.spaceBetweenStrings);
+    circle.setAttribute("cy", stringIndex * this.options.spaceBetweenStrings +10); 
     circle.setAttribute("r", 10);
     circle.setAttribute("fill", "#000");
     circle.style.cursor = "pointer";
 
     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
     text.setAttribute("x", x);
-    text.setAttribute("y", stringIndex * this.options.spaceBetweenStrings + 5);
+    text.setAttribute("y", stringIndex * this.options.spaceBetweenStrings + 15);
     text.setAttribute("text-anchor", "middle");
     text.setAttribute("fill", "white");
     text.setAttribute("font-size", "12px");
@@ -335,23 +335,14 @@ class TabGenerator {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     const totalWidth = this.container.offsetWidth;
     svg.setAttribute("width", "100%");
-    svg.setAttribute("height", this.options.fretHeight);
+    svg.setAttribute("height", "200px" );
     svg.setAttribute("class", this.options.svgClass); // Add class to SVG
-
-    // Set viewBox to cover the width and height of your SVG content
-    svg.setAttribute("viewBox", `0 0 ${totalWidth} ${this.options.fretHeight}`);
-
-    // Ensure the SVG content is centered vertically
-    svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
-
     // Optional styling
-    svg.style.padding = "10px 0px";
-    svg.style.background = "blue";
 
     
     // Draw the guitar strings (horizontal lines)
     for (let i = 0; i < this.options.lines; i++) {
-      let y = i * this.options.spaceBetweenStrings;
+      let y = i * this.options.spaceBetweenStrings + 10	;
 
       const line = document.createElementNS(
         "http://www.w3.org/2000/svg",
