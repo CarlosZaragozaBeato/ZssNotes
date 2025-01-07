@@ -1,22 +1,30 @@
-{% extends 'app/base.html' %}
-
-{% block title %}Home{% endblock %}
+{% extends 'app/base.html' %} {% block title %}Home{% endblock %} 
 
 {% block content %}
 
-<div id="tab-container"></div>
-{% comment %} <button onclick="tab.addMeasure()">Add Measure</button>
-<button onclick="tab.clear()">Clear</button> {% endcomment %}
+<main class="home">
+  <div class="container">
+    <div id="tab-container"></div>
+  </div>
 
+  <div class="options">
+    <div id="settings-container"></div>
+    <button class="add_measure" onclick="tab.addMeasure()">ADD</button>
+  </div>
+</main>
 
-{% load static %}  <!-- Load static template tag -->
+{% load static %}
+<!-- Load static template tag -->
+
 <script src="{% static '/js/TabGenerator.js' %}"></script>
 <script>
-    const tab = new TabGenerator('tab-container', {
-        strings: 6,
-        measures: 1,
-        spaceBetweenStrings: 30
-    });
+  const tab = new TabGenerator("tab-container", "settings-container", {
+    strings: 6,
+    measures: 0,
+    spaceBetweenStrings: 30,
+    svgClass: "custom-tab-class", // Custom class for SVG elements
+  });
+  tab.addMeasure();
 </script>
 
 {% endblock %}

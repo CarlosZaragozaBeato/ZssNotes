@@ -1,14 +1,48 @@
+.home {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+	width:100%;
+}
+.container {
+  width: 90%;
+  display: flex;
+	padding-top:10px;
+	background-color: red;
+}
+#tab-container {
+  width: 100%;
+  margin-top: 50px;
+}
+#settings-container {
+  width: 50%;
+  display: flex;
+  gap: 1rem;
+}
+.fret-button {
+  padding: 10px;
+  background-color: black;
+  color: white;
+  border-radius: 10px;
+}
+.options {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #f9f9f9; /* Adjust the background color as needed */
+  padding: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8); /* Optional shadow for a lifted effect */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000; /* Ensures it stays above other content */
+}
 
-        /* Basic styling */
-        #guitar-tab {
-            margin-bottom: 20px;
-            width: 100%;
-            height: 150px;
-            background-color: red;
-        }
-        button {
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
+.add_measure {
+  background-color: var(--color-black-light);
+  color: var(--color-border-light);
+  padding: 10px 0px;
+  width: 150px;
+  font-weight: bold;
+}
