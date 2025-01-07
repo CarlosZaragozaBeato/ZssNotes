@@ -45,26 +45,57 @@ class TabGenerator {
   }
 
   handleDragEnd() {
+    const button = this.settings.querySelector(`button[data-fret="${this.dragState.currentFret}"]`);
+    if (button) {
+        button.style.backgroundColor = '';
+        button.style.color = '';
+    }
+    
     this.dragState.isDragging = false;
     this.dragState.currentFret = null;
-  }
+}
 
   handleDragOver(e) {
     e.preventDefault();
     if (this.dragState.isDragging) {
-      // Show visual feedback
-      const position = this.calculateNotePosition(e);
-      this.svg_state.push({
-        id: this.svg_state.length + 1,
-        options: {
-          x: position.x,
-          y: position.y,
-          measureIndex: position.measureIndex,
-          fret: this.dragState.currentFret,
-        },
-      });
+        // Get the position
+        const position = this.calculateNotePosition(e);
+        
+        // Get the current fret button
+        const button = this.settings.querySelector(`button[data-fret="${this.dragState.currentFret}"]`);
+        
+        // Check if position is over a line (stringIndex is valid)
+        if (position && 
+            position.measureIndex >= 0 && 
+            position.measureIndex < this.options.measures &&
+            position.stringIndex >= 0 && 
+            position.stringIndex < this.options.lines) {
+            
+            // Change button color when over a line
+            if (button) {
+                button.style.backgroundColor = '#4CAF50';  // Green
+                button.style.color = 'white';
+            }
+            
+            // Store state with valid position
+            this.svg_state.push({
+                id: this.svg_state.length + 1,
+                options: {
+                    x: position.x,
+                    y: position.y,
+                    measureIndex: position.measureIndex,
+                    fret: this.dragState.currentFret,
+                },
+            });
+        } else {
+            // Reset button color when not over a line
+            if (button) {
+                button.style.backgroundColor = '';  // Default color
+                button.style.color = '';
+            }
+        }
     }
-  }
+}
 
   handleDrop(e) {
     e.preventDefault();
@@ -168,17 +199,20 @@ class TabGenerator {
 
       const moveNote = (moveEvent) => {
         const svgRect = svg.getBoundingClientRect();
+        const mouseXMessage = ((moveEvent.clientX - svgRect.left) / this.container.offsetWidth) * 100;
         const mouseX = moveEvent.clientX - svgRect.left;
-
+        
+        
         // Update menu position
         menuContainer.style.display = "block";
         menuContainer.style.left = `${moveEvent.pageX + 10}px`;
         menuContainer.style.top = `${moveEvent.pageY + 10}px`;
 
+
         // Update menu content with current position
         menuContainer.innerHTML = `
                 <div style="font-size: 12px;">
-                    <div>Position: ${Math.round(mouseX)}</div>
+                    <div>Position: ${Math.round(mouseXMessage)}%</div>
                     <div>Fret: ${fret}</div>
                     <div>String: ${stringIndex + 1}</div>
                 </div>
