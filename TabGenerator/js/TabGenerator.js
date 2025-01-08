@@ -19,12 +19,11 @@ class TabGenerator {
       currentFret: null,
       currentElement: null,
     };
-    this.svg_state = [];
+    this.tabState = [];
     this.fretState = {
-      isClicked:false,
+      isClicked: false,
       currentFret: null,
-      currentLine: null
-    }
+    };
 
     this.init();
     this.setupDragAndDrop();
@@ -88,8 +87,8 @@ class TabGenerator {
         }
 
         // Store state with valid position
-        this.svg_state.push({
-          id: this.svg_state.length + 1,
+        this.tabState.push({
+          id: this.tabState.length + 1,
           options: {
             x: position.x,
             y: position.y,
@@ -178,7 +177,10 @@ class TabGenerator {
       "circle"
     );
     circle.setAttribute("cx", x);
-    circle.setAttribute("cy", stringIndex * this.options.spaceBetweenStrings +10); 
+    circle.setAttribute(
+      "cy",
+      stringIndex * this.options.spaceBetweenStrings + 10
+    );
     circle.setAttribute("r", 10);
     circle.setAttribute("fill", "#000");
     circle.style.cursor = "pointer";
@@ -198,11 +200,11 @@ class TabGenerator {
         circle.remove();
         text.remove();
         menuContainer.remove();
-        const noteIndex = this.svg_state[measureIndex].tabs.findIndex(
+        const noteIndex = this.tabState[measureIndex].tabs.findIndex(
           (note) => note.elements.circle === circle
         );
         if (noteIndex !== -1) {
-          this.svg_state[measureIndex].tabs.splice(noteIndex, 1);
+          this.tabState[measureIndex].tabs.splice(noteIndex, 1);
         }
         return;
       }
@@ -237,11 +239,11 @@ class TabGenerator {
         text.setAttribute("x", snappedX);
 
         // Update state
-        const noteIndex = this.svg_state[measureIndex].tabs.findIndex(
+        const noteIndex = this.tabState[measureIndex].tabs.findIndex(
           (note) => note.elements.circle === circle
         );
         if (noteIndex !== -1) {
-          this.svg_state[measureIndex].tabs[noteIndex].x = snappedX;
+          this.tabState[measureIndex].tabs[noteIndex].x = snappedX;
         }
       };
 
@@ -271,7 +273,7 @@ class TabGenerator {
     svg.appendChild(text);
 
     // Store note in state with menu container reference
-    this.svg_state[measureIndex].tabs.push({
+    this.tabState[measureIndex].tabs.push({
       stringIndex,
       fret,
       x,
@@ -308,32 +310,31 @@ class TabGenerator {
   }
 
   handleFretButtonClick(fret) {
-    const actualBtn = document.querySelector(`.fret-${fret}`)    
+    const actualBtn = document.querySelector(`.fret-${fret}`);
     const classListActive = "fret-button-clicked";
-    if (this.fretState.isClicked == false){
+    if (this.fretState.isClicked == false) {
       this.fretState = {
         isClicked: true,
         currentFret: fret,
-        currentLine: null
       };
       actualBtn.classList.add(classListActive);
-    }else{
-      if (fret === this.fretState.currentFret){
+    } else {
+      if (fret === this.fretState.currentFret) {
         this.fretState = {
           isClicked: false,
           currentFret: null,
-          currentLine: null
         };
         actualBtn.classList.remove(classListActive);
-      }else{
-        document.querySelector(`.fret-${this.fretState.currentFret}`).classList.remove(classListActive)
+      } else {
+        document
+          .querySelector(`.fret-${this.fretState.currentFret}`)
+          .classList.remove(classListActive);
         actualBtn.classList.add(classListActive);
         this.fretState = {
           isClicked: true,
           currentFret: fret,
-          currentLine: null
         };
-      }      
+      }
     }
   }
 
@@ -371,43 +372,66 @@ class TabGenerator {
 
     // Draw the guitar strings (horizontal lines)
     for (let i = 0; i < this.options.lines; i++) {
-        let y = i * this.options.spaceBetweenStrings + 10;
+      let y = i * this.options.spaceBetweenStrings + 10;
 
-        const line = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "line"
-        );
-        line.setAttribute("x1", 0);
-        line.setAttribute("y1", y);
-        line.setAttribute("x2", totalWidth);
-        line.setAttribute("y2", y);
-        line.setAttribute("stroke", "#000");
-        line.setAttribute("stroke-width", "2");
-        line.setAttribute("class", `guitar-line string-${i}`); // Add class to line
-        
-        line.addEventListener("click", (e) => this.handleLineClick(e, measureIndex, i));
-        svg.appendChild(line);
+      const line = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "line"
+      );
+      line.setAttribute("x1", 0);
+      line.setAttribute("y1", y);
+      line.setAttribute("x2", totalWidth);
+      line.setAttribute("y2", y);
+      line.setAttribute("stroke", "#000");
+      line.setAttribute("stroke-width", "2");
+      line.setAttribute("class", `guitar-line string-${i}`); // Add class to line
 
+      line.addEventListener("click", (e) => this.handleLineClick(e));
+      svg.appendChild(line);
     }
 
     this.container.appendChild(svg);
-    this.svg_state.push({
-        measureIndex: measureIndex,
-        tabs: [],
+    this.tabState.push({
+      measureIndex: measureIndex,
+      tabs: [],
     });
   }
-  
-  handleLineClick(e, measureIndex, i){
-    console.log(e)
-    console.log(measureIndex)
-    console.log(i)
-  }
 
+  handleLineClick(e) {
+    if (this.fretState.isClicked) {
+      const position = this.calculateNotePosition(e);
+      if (position) {
+        this.addNote(
+          position.measureIndex,
+          position.stringIndex,
+          this.fretState.currentFret,
+          position.x
+        );
+        this.tabState.push({
+          id: this.tabState.length + 1,
+          options: {
+            x: position.x,
+            y: position.y,
+            measureIndex: position.measureIndex,
+            fret: this.fretState.currentFret,
+          },
+        });
+        document
+          .querySelector(`.fret-${this.fretState.currentFret}`)
+          .classList.remove("fret-button-clicked");
+        this.fretState = {
+          isClicked: false,
+          currentFret: null,
+        };
+      }
+    } else {
+      alert("Please select a fret");
+    }
+  }
 
   addMeasure() {
     this.options.measures++;
     this.state.tabs.forEach((line) => line.push({ notes: [] })); // Add an empty measure for each string
     this.renderMeasure(this.options.measures - 1); // Render only the new measure
-    console.log(this.svg_state);
   }
 }
