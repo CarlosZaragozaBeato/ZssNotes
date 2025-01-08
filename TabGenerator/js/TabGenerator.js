@@ -6,7 +6,6 @@ class TabGenerator {
       lines: 6,
       fretWidth: 40,
       fretHeight: 200,
-      measures: 0,
       spaceBetweenStrings: 50,
       svgClass: "guitar-tab", // Default class for SVGs
       ...options,
@@ -182,7 +181,7 @@ class TabGenerator {
       stringIndex * this.options.spaceBetweenStrings + 10
     );
     circle.setAttribute("r", 10);
-    circle.setAttribute("fill", "#000");
+    circle.setAttribute("fill", "black");
     circle.style.cursor = "pointer";
 
     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -286,7 +285,7 @@ class TabGenerator {
     this.container.style.fontFamily = "monospace";
     this.container.style.userSelect = "none";
 
-    this.createEmptyTab();
+    this.createTab();
     this.generateSettings();
 
     this.container.addEventListener("contextmenu", (e) => e.preventDefault());
@@ -300,13 +299,16 @@ class TabGenerator {
       button.classList.add(`fret-button`);
       button.classList.add(`fret-${fret}`);
       button.dataset.fret = fret; // Store fret number as data attribute
-
       // Add event listener to handle button click
       button.addEventListener("click", () => this.handleFretButtonClick(fret));
-
       // Append the button to the settings container
       this.settings.appendChild(button);
     }
+    const button = document.createElement("button");
+    button.textContent = "Add Measure";
+    button.classList.add("add_measure");
+    button.addEventListener("click", () => this.addMeasure());
+    this.settings.appendChild(button);
   }
 
   handleFretButtonClick(fret) {
@@ -338,7 +340,17 @@ class TabGenerator {
     }
   }
 
-  createEmptyTab() {
+  createTab() {
+    // Create metronome
+    if (this.options.measures > 0){ 
+      for(let i =0; i<this.options.measures; i++){
+        this.renderMeasure(i);
+      } 
+    }else{
+      console.log("na")
+    }
+
+
     // Initialize empty tab structure with measures
     for (let i = 0; i < this.options.lines; i++) {
       this.state.tabs[i] = Array(this.options.measures)
