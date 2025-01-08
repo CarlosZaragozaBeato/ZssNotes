@@ -6,7 +6,6 @@ class TabGenerator {
       lines: 6,
       fretWidth: 40,
       fretHeight: 200,
-      measures: 0,
       spaceBetweenStrings: 50,
       svgClass: "guitar-tab", // Default class for SVGs
       ...options,
@@ -19,7 +18,11 @@ class TabGenerator {
       currentFret: null,
       currentElement: null,
     };
-    this.svg_state = [];
+    this.tabState = [];
+    this.fretState = {
+      isClicked: false,
+      currentFret: null,
+    };
 
     this.init();
     this.setupDragAndDrop();
@@ -83,8 +86,8 @@ class TabGenerator {
         }
 
         // Store state with valid position
-        this.svg_state.push({
-          id: this.svg_state.length + 1,
+        this.tabState.push({
+          id: this.tabState.length + 1,
           options: {
             x: position.x,
             y: position.y,
@@ -173,9 +176,12 @@ class TabGenerator {
       "circle"
     );
     circle.setAttribute("cx", x);
-    circle.setAttribute("cy", stringIndex * this.options.spaceBetweenStrings +10); 
+    circle.setAttribute(
+      "cy",
+      stringIndex * this.options.spaceBetweenStrings + 10
+    );
     circle.setAttribute("r", 10);
-    circle.setAttribute("fill", "#000");
+    circle.setAttribute("fill", "black");
     circle.style.cursor = "pointer";
 
     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -193,11 +199,11 @@ class TabGenerator {
         circle.remove();
         text.remove();
         menuContainer.remove();
-        const noteIndex = this.svg_state[measureIndex].tabs.findIndex(
+        const noteIndex = this.tabState[measureIndex].tabs.findIndex(
           (note) => note.elements.circle === circle
         );
         if (noteIndex !== -1) {
-          this.svg_state[measureIndex].tabs.splice(noteIndex, 1);
+          this.tabState[measureIndex].tabs.splice(noteIndex, 1);
         }
         return;
       }
@@ -212,7 +218,7 @@ class TabGenerator {
         // Update menu position
         menuContainer.style.display = "block";
         menuContainer.style.left = `${moveEvent.pageX + 10}px`;
-        menuContainer.style.top = `${moveEvent.pageY + 10}px`;
+        menuContainer.style.top = `${Math.round(moveEvent.pageY / 2)}px`;
 
         // Update menu content with current position
         menuContainer.innerHTML = `
@@ -232,11 +238,11 @@ class TabGenerator {
         text.setAttribute("x", snappedX);
 
         // Update state
-        const noteIndex = this.svg_state[measureIndex].tabs.findIndex(
+        const noteIndex = this.tabState[measureIndex].tabs.findIndex(
           (note) => note.elements.circle === circle
         );
         if (noteIndex !== -1) {
-          this.svg_state[measureIndex].tabs[noteIndex].x = snappedX;
+          this.tabState[measureIndex].tabs[noteIndex].x = snappedX;
         }
       };
 
@@ -266,7 +272,7 @@ class TabGenerator {
     svg.appendChild(text);
 
     // Store note in state with menu container reference
-    this.svg_state[measureIndex].tabs.push({
+    this.tabState[measureIndex].tabs.push({
       stringIndex,
       fret,
       x,
@@ -279,7 +285,7 @@ class TabGenerator {
     this.container.style.fontFamily = "monospace";
     this.container.style.userSelect = "none";
 
-    this.createEmptyTab();
+    this.createTab();
     this.generateSettings();
 
     this.container.addEventListener("contextmenu", (e) => e.preventDefault());
@@ -290,23 +296,61 @@ class TabGenerator {
     for (let fret = 0; fret <= 24; fret++) {
       const button = document.createElement("button");
       button.textContent = `${fret}`;
-      button.classList.add("fret-button");
+      button.classList.add(`fret-button`);
+      button.classList.add(`fret-${fret}`);
       button.dataset.fret = fret; // Store fret number as data attribute
-
       // Add event listener to handle button click
       button.addEventListener("click", () => this.handleFretButtonClick(fret));
-
       // Append the button to the settings container
       this.settings.appendChild(button);
     }
+    const addMeasureButton = document.createElement("button");
+    addMeasureButton.textContent = "Add Measure";
+    addMeasureButton.classList.add("add_measure");
+    addMeasureButton.addEventListener("click", () => this.addMeasure());
+
+    this.settings.appendChild(addMeasureButton);
   }
 
   handleFretButtonClick(fret) {
-    console.log(`Fret ${fret} button clicked`);
-    // Add your logic here for what happens when a fret button is clicked
+    const actualBtn = document.querySelector(`.fret-${fret}`);
+    const classListActive = "fret-button-clicked";
+    if (this.fretState.isClicked == false) {
+      this.fretState = {
+        isClicked: true,
+        currentFret: fret,
+      };
+      actualBtn.classList.add(classListActive);
+    } else {
+      if (fret === this.fretState.currentFret) {
+        this.fretState = {
+          isClicked: false,
+          currentFret: null,
+        };
+        actualBtn.classList.remove(classListActive);
+      } else {
+        document
+          .querySelector(`.fret-${this.fretState.currentFret}`)
+          .classList.remove(classListActive);
+        actualBtn.classList.add(classListActive);
+        this.fretState = {
+          isClicked: true,
+          currentFret: fret,
+        };
+      }
+    }
   }
 
-  createEmptyTab() {
+  createTab() {
+    // Create metronome
+    if (this.options.measures > 0) {
+      for (let i = 0; i < this.options.measures; i++) {
+        this.renderMeasure(i);
+      }
+    } else {
+      console.log("na");
+    }
+
     // Initialize empty tab structure with measures
     for (let i = 0; i < this.options.lines; i++) {
       this.state.tabs[i] = Array(this.options.measures)
@@ -320,7 +364,6 @@ class TabGenerator {
   render() {
     // Clear the container
     this.container.innerHTML = "";
-
     // Render each SVG measure
     for (
       let measureIndex = 0;
@@ -331,18 +374,20 @@ class TabGenerator {
     }
   }
 
+  // Measure
   renderMeasure(measureIndex) {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     const totalWidth = this.container.offsetWidth;
     svg.setAttribute("width", "100%");
-    svg.setAttribute("height", "200px" );
-    svg.setAttribute("class", this.options.svgClass); // Add class to SVG
-    // Optional styling
+    svg.setAttribute("height", "200px");
+    svg.setAttribute(
+      "class",
+      `${this.options.svgClass} measure-${measureIndex}`
+    ); // Add class to SVG
 
-    
     // Draw the guitar strings (horizontal lines)
     for (let i = 0; i < this.options.lines; i++) {
-      let y = i * this.options.spaceBetweenStrings + 10	;
+      let y = i * this.options.spaceBetweenStrings + 10;
 
       const line = document.createElementNS(
         "http://www.w3.org/2000/svg",
@@ -354,20 +399,59 @@ class TabGenerator {
       line.setAttribute("y2", y);
       line.setAttribute("stroke", "#000");
       line.setAttribute("stroke-width", "2");
+      line.setAttribute("class", `guitar-line string-${i}`); // Add class to line
+
+      line.addEventListener("click", (e) => this.handleLineClick(e));
       svg.appendChild(line);
     }
+    svg.addEventListener("click", (e) => this.handleEditMeasure(e));
+    // svg.addEventListener("", (e) => {console.log("RIGHT SELECT")});
 
     this.container.appendChild(svg);
-    this.svg_state.push({
+    this.tabState.push({
       measureIndex: measureIndex,
       tabs: [],
     });
   }
 
+  handleEditMeasure(e) {
+    console.log(e);
+  }
   addMeasure() {
     this.options.measures++;
     this.state.tabs.forEach((line) => line.push({ notes: [] })); // Add an empty measure for each string
     this.renderMeasure(this.options.measures - 1); // Render only the new measure
-    console.log(this.svg_state);
+  }
+  removeMeasure() {
+    this.options.measures--;
+  }
+  handleLineClick(e) {
+    if (this.fretState.isClicked) {
+      const position = this.calculateNotePosition(e);
+      if (position) {
+        this.addNote(
+          position.measureIndex,
+          position.stringIndex,
+          this.fretState.currentFret,
+          position.x
+        );
+        this.tabState.push({
+          id: this.tabState.length + 1,
+          options: {
+            x: position.x,
+            y: position.y,
+            measureIndex: position.measureIndex,
+            fret: this.fretState.currentFret,
+          },
+        });
+        document
+          .querySelector(`.fret-${this.fretState.currentFret}`)
+          .classList.remove("fret-button-clicked");
+        this.fretState = {
+          isClicked: false,
+          currentFret: null,
+        };
+      }
+    }
   }
 }

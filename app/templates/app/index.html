@@ -3,28 +3,43 @@
 {% block content %}
 
 <main class="home">
+
+  <div class="current-state">
+    <h1>current STATE </h1>
+  </div>
+
   <div class="container">
     <div id="tab-container"></div>
   </div>
 
+  <!--Edit Options-->
   <div class="options">
     <div id="settings-container"></div>
-    <button class="add_measure" onclick="tab.addMeasure()">ADD</button>
+  <div>
+  <div class="edit-options">
+    <button>Load</button>
+    <button>Save</button>
+    <button>Remove</button>
+  </div>
+
+  <!--Playing Options-->
+  <div class="metronome-options">
+
   </div>
 </main>
-
+  
 {% load static %}
 <!-- Load static template tag -->
 
 <script src="{% static '/js/TabGenerator.js' %}"></script>
+
 <script>
-  const tab = new TabGenerator("tab-container", "settings-container", {
-    strings: 6,
-    measures: 0,
-    spaceBetweenStrings: 30,
-    svgClass: "custom-tab-class", // Custom class for SVG elements
-  });
-  tab.addMeasure();
+const tab = new TabGenerator("tab-container", "settings-container", {
+  strings: 6,
+  measures: 2,
+  spaceBetweenStrings: 30,
+  svgClass: "custom-tab-class", // Custom class for SVG elements
+});
 </script>
 
 {% endblock %}
