@@ -111,6 +111,7 @@ main {
 #settings-container {
   width: 50%;
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 .fret-button {
@@ -140,3 +141,28 @@ main {
   width: 150px;
   font-weight: bold;
 }
+
+.fret-button-clicked {
+  background-color: rgba(0, 0, 0, 0.808);
+}
+
+
+/* Default style for guitar strings */
+.guitar-line {
+  stroke: #000; /* Default color */
+}
+
+/* Change color on hover */
+.guitar-line:hover {
+  stroke: #00000069; /* Change to red on hover */
+  cursor: pointer;
+}
+
+
+/*.string-0 {
+  stroke: #ff0000; 
+}
+.string-1 {
+  stroke: #00ff00; 
+}
+*/

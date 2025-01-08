@@ -18,6 +18,7 @@
   </div>
 </main>
 <script>
+  
   const tab = new TabGenerator("tab-container", "settings-container", {
     strings: 6,
     measures: 0,
@@ -25,4 +26,17 @@
     svgClass: "custom-tab-class", // Custom class for SVG elements
   });
   tab.addMeasure();
+
+
+   /*function  changeLineColor(stringIndex, color) {
+    const lines = document.querySelectorAll(`.string-${stringIndex}`);
+    lines.forEach(line => {
+      console.log(line)
+      line.style.stroke = "red";  
+      line.setAttribute("stroke", "#10ff00");
+    });
+   }
+  // Example usage: change the color of the second string (index 1) to blue
+  changeLineColor(1, 'black');*/
+
 </script>

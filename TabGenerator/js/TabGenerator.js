@@ -20,6 +20,11 @@ class TabGenerator {
       currentElement: null,
     };
     this.svg_state = [];
+    this.fretState = {
+      isClicked:false,
+      currentFret: null,
+      currentLine: null
+    }
 
     this.init();
     this.setupDragAndDrop();
@@ -45,57 +50,62 @@ class TabGenerator {
   }
 
   handleDragEnd() {
-    const button = this.settings.querySelector(`button[data-fret="${this.dragState.currentFret}"]`);
+    const button = this.settings.querySelector(
+      `button[data-fret="${this.dragState.currentFret}"]`
+    );
     if (button) {
-        button.style.backgroundColor = '';
-        button.style.color = '';
+      button.style.backgroundColor = "";
+      button.style.color = "";
     }
-    
+
     this.dragState.isDragging = false;
     this.dragState.currentFret = null;
-}
+  }
 
   handleDragOver(e) {
     e.preventDefault();
     if (this.dragState.isDragging) {
-        // Get the position
-        const position = this.calculateNotePosition(e);
-        
-        // Get the current fret button
-        const button = this.settings.querySelector(`button[data-fret="${this.dragState.currentFret}"]`);
-        
-        // Check if position is over a line (stringIndex is valid)
-        if (position && 
-            position.measureIndex >= 0 && 
-            position.measureIndex < this.options.measures &&
-            position.stringIndex >= 0 && 
-            position.stringIndex < this.options.lines) {
-            
-            // Change button color when over a line
-            if (button) {
-                button.style.backgroundColor = '#4CAF50';  // Green
-                button.style.color = 'white';
-            }
-            
-            // Store state with valid position
-            this.svg_state.push({
-                id: this.svg_state.length + 1,
-                options: {
-                    x: position.x,
-                    y: position.y,
-                    measureIndex: position.measureIndex,
-                    fret: this.dragState.currentFret,
-                },
-            });
-        } else {
-            // Reset button color when not over a line
-            if (button) {
-                button.style.backgroundColor = '';  // Default color
-                button.style.color = '';
-            }
+      // Get the position
+      const position = this.calculateNotePosition(e);
+
+      // Get the current fret button
+      const button = this.settings.querySelector(
+        `button[data-fret="${this.dragState.currentFret}"]`
+      );
+
+      // Check if position is over a line (stringIndex is valid)
+      if (
+        position &&
+        position.measureIndex >= 0 &&
+        position.measureIndex < this.options.measures &&
+        position.stringIndex >= 0 &&
+        position.stringIndex < this.options.lines
+      ) {
+        // Change button color when over a line
+        if (button) {
+          button.style.backgroundColor = "#4CAF50"; // Green
+          button.style.color = "white";
         }
+
+        // Store state with valid position
+        this.svg_state.push({
+          id: this.svg_state.length + 1,
+          options: {
+            x: position.x,
+            y: position.y,
+            measureIndex: position.measureIndex,
+            fret: this.dragState.currentFret,
+          },
+        });
+      } else {
+        // Reset button color when not over a line
+        if (button) {
+          button.style.backgroundColor = ""; // Default color
+          button.style.color = "";
+        }
+      }
     }
-}
+  }
 
   handleDrop(e) {
     e.preventDefault();
@@ -168,14 +178,14 @@ class TabGenerator {
       "circle"
     );
     circle.setAttribute("cx", x);
-    circle.setAttribute("cy", stringIndex * this.options.spaceBetweenStrings);
+    circle.setAttribute("cy", stringIndex * this.options.spaceBetweenStrings +10); 
     circle.setAttribute("r", 10);
     circle.setAttribute("fill", "#000");
     circle.style.cursor = "pointer";
 
     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
     text.setAttribute("x", x);
-    text.setAttribute("y", stringIndex * this.options.spaceBetweenStrings + 5);
+    text.setAttribute("y", stringIndex * this.options.spaceBetweenStrings + 15);
     text.setAttribute("text-anchor", "middle");
     text.setAttribute("fill", "white");
     text.setAttribute("font-size", "12px");
@@ -199,24 +209,24 @@ class TabGenerator {
 
       const moveNote = (moveEvent) => {
         const svgRect = svg.getBoundingClientRect();
-        const mouseXMessage = ((moveEvent.clientX - svgRect.left) / this.container.offsetWidth) * 100;
+        const mouseXMessage =
+          ((moveEvent.clientX - svgRect.left) / this.container.offsetWidth) *
+          100;
         const mouseX = moveEvent.clientX - svgRect.left;
-        
-        
+
         // Update menu position
         menuContainer.style.display = "block";
         menuContainer.style.left = `${moveEvent.pageX + 10}px`;
         menuContainer.style.top = `${moveEvent.pageY + 10}px`;
 
-
         // Update menu content with current position
         menuContainer.innerHTML = `
-                <div style="font-size: 12px;">
-                    <div>Position: ${Math.round(mouseXMessage)}%</div>
-                    <div>Fret: ${fret}</div>
-                    <div>String: ${stringIndex + 1}</div>
-                </div>
-            `;
+                  <div style="font-size: 12px;">
+                      <div>Position: ${Math.round(mouseXMessage)}%</div>
+                      <div>Fret: ${fret}</div>
+                      <div>String: ${stringIndex + 1}</div>
+                  </div>
+              `;
 
         // Snap to grid
         const gridSize = 5;
@@ -285,7 +295,8 @@ class TabGenerator {
     for (let fret = 0; fret <= 24; fret++) {
       const button = document.createElement("button");
       button.textContent = `${fret}`;
-      button.classList.add("fret-button");
+      button.classList.add(`fret-button`);
+      button.classList.add(`fret-${fret}`);
       button.dataset.fret = fret; // Store fret number as data attribute
 
       // Add event listener to handle button click
@@ -297,8 +308,33 @@ class TabGenerator {
   }
 
   handleFretButtonClick(fret) {
-    console.log(`Fret ${fret} button clicked`);
-    // Add your logic here for what happens when a fret button is clicked
+    const actualBtn = document.querySelector(`.fret-${fret}`)    
+    const classListActive = "fret-button-clicked";
+    if (this.fretState.isClicked == false){
+      this.fretState = {
+        isClicked: true,
+        currentFret: fret,
+        currentLine: null
+      };
+      actualBtn.classList.add(classListActive);
+    }else{
+      if (fret === this.fretState.currentFret){
+        this.fretState = {
+          isClicked: false,
+          currentFret: null,
+          currentLine: null
+        };
+        actualBtn.classList.remove(classListActive);
+      }else{
+        document.querySelector(`.fret-${this.fretState.currentFret}`).classList.remove(classListActive)
+        actualBtn.classList.add(classListActive);
+        this.fretState = {
+          isClicked: true,
+          currentFret: fret,
+          currentLine: null
+        };
+      }      
+    }
   }
 
   createEmptyTab() {
@@ -328,36 +364,45 @@ class TabGenerator {
 
   renderMeasure(measureIndex) {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("width", "100%");
-    svg.setAttribute("height", this.options.fretHeight);
-    svg.setAttribute("class", this.options.svgClass); // Add class to SVG
-    svg.style.marginBottom = "10px"; // Space between SVGs
-
-    // Calculate the total width of the grid (based on container width)
     const totalWidth = this.container.offsetWidth;
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "200px");
+    svg.setAttribute("class", this.options.svgClass); // Add class to SVG
 
     // Draw the guitar strings (horizontal lines)
     for (let i = 0; i < this.options.lines; i++) {
-      const y = i * this.options.spaceBetweenStrings;
-      const line = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "line"
-      );
-      line.setAttribute("x1", 0);
-      line.setAttribute("y1", y);
-      line.setAttribute("x2", totalWidth);
-      line.setAttribute("y2", y);
-      line.setAttribute("stroke", "#000");
-      line.setAttribute("stroke-width", "1");
-      svg.appendChild(line);
+        let y = i * this.options.spaceBetweenStrings + 10;
+
+        const line = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "line"
+        );
+        line.setAttribute("x1", 0);
+        line.setAttribute("y1", y);
+        line.setAttribute("x2", totalWidth);
+        line.setAttribute("y2", y);
+        line.setAttribute("stroke", "#000");
+        line.setAttribute("stroke-width", "2");
+        line.setAttribute("class", `guitar-line string-${i}`); // Add class to line
+        
+        line.addEventListener("click", (e) => this.handleLineClick(e, measureIndex, i));
+        svg.appendChild(line);
+
     }
 
     this.container.appendChild(svg);
     this.svg_state.push({
-      measureIndex: measureIndex,
-      tabs: [],
+        measureIndex: measureIndex,
+        tabs: [],
     });
   }
+  
+  handleLineClick(e, measureIndex, i){
+    console.log(e)
+    console.log(measureIndex)
+    console.log(i)
+  }
+
 
   addMeasure() {
     this.options.measures++;
