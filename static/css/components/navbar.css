@@ -1,0 +1,22 @@
+.navbar {
+    background-color: var(--color-black-light);
+    color: var(--color-white);
+    padding: 10px 20px;
+}
+.navbar ul{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap:10px;
+    align-items: center;
+}
+.navbar ul  .auth {
+    margin-left:15px;
+    background-color: var(--login_bg);
+    padding: 10px;
+}
+.navbar ul li a.active {
+    text-decoration: underline;
+}
+
+
