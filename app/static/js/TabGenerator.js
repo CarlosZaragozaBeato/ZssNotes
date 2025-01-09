@@ -5,6 +5,7 @@ class TabGenerator {
     this.options = {
       lines: 6,
       fretWidth: 40,
+      fretHeight: 150,
       spaceBetweenStrings: 50,
       svgClass: "guitar-tab", // Default class for SVGs
       ...options,
@@ -382,6 +383,7 @@ class TabGenerator {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     const totalWidth = this.container.offsetWidth;
     svg.setAttribute("width", "100%");
+    svg.style.height = `${this.options.fretHeight}px`;
     svg.setAttribute(
       "class",
       `${this.options.svgClass} measure-${measureIndex}`
@@ -429,11 +431,9 @@ class TabGenerator {
     this.options.measures--;
   }
   handleLineClick(e) {
-    console.log(e)
     if (this.fretState.isClicked) {
       const position = this.calculateNotePosition(e);
       if (position) {
-        console.log(position)
         this.addNote(
           position.measureIndex,
           position.stringIndex,
