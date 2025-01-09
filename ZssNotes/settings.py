@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-hz3%6^lw^)cqte_n(mbtbimot2nne(wdjmtjq(l+bd%fm)f7wf
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "127.0.0.1"
+    "127.0.0.1",
+    "51.75.18.3"
 ]
 
 
@@ -43,7 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'ZssNotes'
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -120,6 +123,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
+
+STATIC_ROOT = '/home/czaragoza/ZssNotes/static/'
+MEDIA_ROOT = '/home/czaragoza/ZssNotes/media/'
 
 STATIC_URL = '/static/'
 
