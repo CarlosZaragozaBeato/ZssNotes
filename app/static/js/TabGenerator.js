@@ -1,34 +1,35 @@
 class TabGenerator {
   constructor(containerId, settingsId, options = {}) {
-    this.settings = document.getElementById(settingsId);
-    this.container = document.getElementById(containerId);
-    this.options = {
-      lines: 6,
-      fretWidth: 40,
-      fretHeight: 150,
-      spaceBetweenStrings: 50,
-      svgClass: "guitar-tab", // Default class for SVGs
-      ...options,
-    };
-    this.state = {
-      tabs: [],
-    };
-    this.dragState = {
-      isDragging: false,
-      currentFret: null,
-      currentElement: null,
-    };
-    this.tabState = [];
-    this.fretState = {
-      isClicked: false,
-      currentFret: null,
-    };
-    this.measureState = {
-      isClicked: false,
-      currentMeasure: null,
-    };
-    this.init();
-    this.setupDragAndDrop();
+    // this.settings = document.getElementById(settingsId);
+    // this.container = document.getElementById(containerId);
+    // this.options = {
+    //   lines: 6,
+    //   fretWidth: 40,
+    //   fretHeight: 150,
+    //   spaceBetweenStrings: 50,
+    //   svgClass: "guitar-tab", // Default class for SVGs
+    //   ...options,
+    // };
+    // this.state = {
+    //   tabs: [],
+    // };
+    // this.dragState = {
+    //   isDragging: false,
+    //   currentFret: null,
+    //   currentElement: null,
+    // };
+    // this.tabState = [];
+    // this.fretState = {
+    //   isClicked: false,
+    //   currentFret: null,
+    // };
+    // this.measureState = {
+    //   isClicked: false,
+    //   currentMeasure: null,
+    // };
+    // this.init();
+    // this.setupDragAndDrop();
+    console.log("init")
   }
   setupDragAndDrop() {
     // Make fret buttons draggable
