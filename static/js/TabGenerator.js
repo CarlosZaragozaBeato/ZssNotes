@@ -10,6 +10,7 @@ class TabGenerator {
     this.options = {
       lines: 6,
       fretWidth: 40,
+      fretHeight: 150,
       spaceBetweenStrings: 50,
       svgClass: "guitar-tab", // Default class for SVGs
       ...options,
