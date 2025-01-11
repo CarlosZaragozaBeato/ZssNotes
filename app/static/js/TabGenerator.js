@@ -51,11 +51,25 @@ class TabGenerator {
     this.container.style.fontFamily = "monospace";
     this.container.style.userSelect = "none";
 
-    console.log(this.currentState)
+    this.stateInitialiser();
     this.createTab();
     this.generateSettings();
 
     this.container.addEventListener("contextmenu", (e) => e.preventDefault());
+  }
+
+  stateInitialiser(){
+    if (this.currentState.state === "edit"){
+      const edit = document.querySelector(".options-menu");
+      edit.style.display = "block";
+      const currentText = document.querySelector(".text-current-state");
+      currentText.textContent = "EDIT MODE";
+    }else if(this.currentState.state === "play"){
+      const view = document.querySelector(".play-menu");
+      view.style.display = "block";
+      const currentText = document.querySelector(".text-current-state");
+      currentText.textContent = "PLAY MODE";
+    }
   }
 
   generateSettings() {

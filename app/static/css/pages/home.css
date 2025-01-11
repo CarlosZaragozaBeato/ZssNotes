@@ -76,6 +76,25 @@
   cursor: pointer;
 }
 
+.current-state {
+
+  margin-top:2px;
+  background-color: var(--color-black-light);
+  display: flex;
+  align-items: center;
+  color:white;
+  opacity: 0.3;
+  cursor: pointer;
+  border-radius: 5px;
+  align-self: left;
+  transition: all 75ms linear;  
+}
+.current-state svg{
+  fill:white;
+}
+.current-state:hover{
+  opacity: 1;
+}
 
 /*.string-0 {
   stroke: #ff0000; 
