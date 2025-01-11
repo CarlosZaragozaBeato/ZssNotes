@@ -2,6 +2,11 @@ class TabGenerator {
   constructor(containerId, settingsId, options = {}) {
     this.settings = document.getElementById(settingsId);
     this.container = document.getElementById(containerId);
+    
+    this.currentState = {
+      status: "edit"
+    };
+
     this.options = {
       lines: 6,
       fretWidth: 40,
@@ -10,9 +15,6 @@ class TabGenerator {
       svgClass: "guitar-tab", // Default class for SVGs
       ...options,
     };
-    this.currentState = {
-      state: "edit"
-    }
     this.state = {
       tabs: [],
     };
@@ -30,76 +32,12 @@ class TabGenerator {
       isClicked: false,
       currentMeasure: null,
     };
+    
+    console.log(2);
     this.init();
     this.setupDragAndDrop();
   }
-  /**Init Methods */
-  setupDragAndDrop() {
-    // Make fret buttons draggable
-    const buttons = this.settings.getElementsByClassName("fret-button");
-    Array.from(buttons).forEach((button) => {
-      button.draggable = true;
-      button.addEventListener("dragstart", (e) => this.handleDragStart(e));
-      button.addEventListener("dragend", () => this.handleDragEnd());
-    });
-    // Make SVG areas droppable
-    this.container.addEventListener("dragover", (e) => this.handleDragOver(e));
-    this.container.addEventListener("drop", (e) => this.handleDrop(e));
-  }
-  init() {
-    this.container.style.position = "relative";
-    this.container.style.fontFamily = "monospace";
-    this.container.style.userSelect = "none";
 
-    console.log(this.currentState)
-    this.createTab();
-    this.generateSettings();
-
-    this.container.addEventListener("contextmenu", (e) => e.preventDefault());
-  }
-
-  generateSettings() {
-    // Generate buttons for frets 0 to 24
-    for (let fret = 0; fret <= 24; fret++) {
-      const button = document.createElement("button");
-      button.textContent = `${fret}`;
-      button.classList.add(`fret-button`);
-      button.classList.add(`fret-${fret}`);
-      button.dataset.fret = fret; // Store fret number as data attribute
-      // Add event listener to handle button click
-      button.addEventListener("click", () => this.handleFretButtonClick(fret));
-      // Append the button to the settings container
-      this.settings.appendChild(button);
-    }
-    const addMeasureButton = document.createElement("button");
-    addMeasureButton.textContent = "Add Measure";
-    addMeasureButton.classList.add("add_measure");
-    addMeasureButton.addEventListener("click", () => this.addMeasure());
-
-    this.settings.appendChild(addMeasureButton);
-  }
-
-  createTab() {
-    // Create metronome
-    if (this.options.measures > 0) {
-      for (let i = 0; i < this.options.measures; i++) {
-        this.renderMeasure(i);
-      }
-    } else {
-      console.log("na");
-    }
-
-    // Initialize empty tab structure with measures
-    for (let i = 0; i < this.options.lines; i++) {
-      this.state.tabs[i] = Array(this.options.measures)
-        .fill()
-        .map(() => ({
-          notes: [],
-        }));
-    }
-  }
-
-  /** UTILS */
   calculateNotePosition(e) {
     const rect = this.container.getBoundingClientRect();
     const mouseY = e.clientY - rect.top;
@@ -138,6 +76,7 @@ class TabGenerator {
     const svg = this.container.getElementsByClassName(this.options.svgClass)[
       measureIndex
     ];
+    console.log(svg);
     // Create a container div for the menu that will be positioned absolutely
     const menuContainer = document.createElement("div");
     menuContainer.style.position = "absolute";
@@ -261,6 +200,85 @@ class TabGenerator {
     });
   }
 
+  init() {
+    this.container.style.position = "relative";
+    this.container.style.fontFamily = "monospace";
+    this.container.style.userSelect = "none";
+    console.log(this.currentState);
+    this.stateInitialicer();
+    this.createTab();
+    this.generateSettings();
+
+    this.container.addEventListener("contextmenu", (e) => e.preventDefault());
+  }
+
+  /* Init Functions */
+  stateInitialicer() {
+    console.log("asda")
+    console.log(this.currentState);
+    // if (this.currentState.status === "edit") {
+    //   const title = document.querySelector(".current-state");
+    //   title.textContent = "Edit Mode";
+    //   const options = document.querySelector(".options-menu");
+    //   options.style.display = "block";
+
+    // }
+  }
+  generateSettings() {
+    // Generate buttons for frets 0 to 24
+    for (let fret = 0; fret <= 24; fret++) {
+      const button = document.createElement("button");
+      button.textContent = `${fret}`;
+      button.classList.add(`fret-button`);
+      button.classList.add(`fret-${fret}`);
+      button.dataset.fret = fret; // Store fret number as data attribute
+      // Add event listener to handle button click
+      button.addEventListener("click", () => this.handleFretButtonClick(fret));
+      // Append the button to the settings container
+      this.settings.appendChild(button);
+    }
+    const addMeasureButton = document.createElement("button");
+    addMeasureButton.textContent = "Add Measure";
+    addMeasureButton.classList.add("add_measure");
+    addMeasureButton.addEventListener("click", () => this.addMeasure());
+
+    this.settings.appendChild(addMeasureButton);
+  }
+
+  createTab() {
+    // Create metronome
+    if (this.options.measures > 0) {
+      for (let i = 0; i < this.options.measures; i++) {
+        this.renderMeasure(i);
+      }
+    } else {
+      console.log("na");
+    }
+
+    // Initialize empty tab structure with measures
+    for (let i = 0; i < this.options.lines; i++) {
+      this.state.tabs[i] = Array(this.options.measures)
+        .fill()
+        .map(() => ({
+          notes: [],
+        }));
+    }
+  }
+
+  setupDragAndDrop() {
+    // Make fret buttons draggable
+    const buttons = this.settings.getElementsByClassName("fret-button");
+    Array.from(buttons).forEach((button) => {
+      button.draggable = true;
+      button.addEventListener("dragstart", (e) => this.handleDragStart(e));
+      button.addEventListener("dragend", () => this.handleDragEnd());
+    });
+    // Make SVG areas droppable
+    this.container.addEventListener("dragover", (e) => this.handleDragOver(e));
+    this.container.addEventListener("drop", (e) => this.handleDrop(e));
+  }
+
+  /** UTILS **/
   render() {
     // Clear the container
     this.container.innerHTML = "";
@@ -279,7 +297,6 @@ class TabGenerator {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     const totalWidth = this.container.offsetWidth;
     svg.setAttribute("width", "100%");
-    svg.style.height = `${this.options.fretHeight}px`;
     svg.setAttribute(
       "class",
       `${this.options.svgClass} measure-${measureIndex}`
@@ -314,16 +331,12 @@ class TabGenerator {
     });
   }
 
-  addMeasure() {
-    this.options.measures++;
-    this.state.tabs.forEach((line) => line.push({ notes: [] })); // Add an empty measure for each string
-    this.renderMeasure(this.options.measures - 1); // Render only the new measure
-  }
-  removeMeasure() {
-    this.options.measures--;
-  }
 
-  /**Actions*/
+
+
+
+
+  /** Actions */
   handleFretButtonClick(fret) {
     const actualBtn = document.querySelector(`.fret-${fret}`);
     const classListActive = "fret-button-clicked";
@@ -352,39 +365,7 @@ class TabGenerator {
       }
     }
   }
-  handleEditMeasure(e) {
-    const measureSelected = e.target;
-    measureSelected.style.opacity = ".3z";
-  }
-  handleLineClick(e) {
-    if (this.fretState.isClicked) {
-      const position = this.calculateNotePosition(e);
-      if (position) {
-        this.addNote(
-          position.measureIndex,
-          position.stringIndex,
-          this.fretState.currentFret,
-          position.x
-        );
-        this.tabState.push({
-          id: this.tabState.length + 1,
-          options: {
-            x: position.x,
-            y: position.y,
-            measureIndex: position.measureIndex,
-            fret: this.fretState.currentFret,
-          },
-        });
-        document
-          .querySelector(`.fret-${this.fretState.currentFret}`)
-          .classList.remove("fret-button-clicked");
-        this.fretState = {
-          isClicked: false,
-          currentFret: null,
-        };
-      }
-    }
-  }
+
   handleDragStart(e) {
     this.dragState.isDragging = true;
     this.dragState.currentFret = e.target.dataset.fret;
@@ -461,6 +442,50 @@ class TabGenerator {
         fret,
         position.x
       );
+    }
+  }
+
+  handleEditMeasure(e) {
+    const measureSelected = e.target;
+    measureSelected.style.opacity = ".3z";
+  }
+  addMeasure() {
+    this.options.measures++;
+    this.state.tabs.forEach((line) => line.push({ notes: [] })); // Add an empty measure for each string
+    this.renderMeasure(this.options.measures - 1); // Render only the new measure
+  }
+  removeMeasure() {
+    this.options.measures--;
+  }
+  handleLineClick(e) {
+    console.log(e);
+    if (this.fretState.isClicked) {
+      const position = this.calculateNotePosition(e);
+      if (position) {
+        console.log(position);
+        this.addNote(
+          position.measureIndex,
+          position.stringIndex,
+          this.fretState.currentFret,
+          position.x
+        );
+        this.tabState.push({
+          id: this.tabState.length + 1,
+          options: {
+            x: position.x,
+            y: position.y,
+            measureIndex: position.measureIndex,
+            fret: this.fretState.currentFret,
+          },
+        });
+        document
+          .querySelector(`.fret-${this.fretState.currentFret}`)
+          .classList.remove("fret-button-clicked");
+        this.fretState = {
+          isClicked: false,
+          currentFret: null,
+        };
+      }
     }
   }
 }
