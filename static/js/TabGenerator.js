@@ -2,6 +2,11 @@ class TabGenerator {
   constructor(containerId, settingsId, options = {}) {
     this.settings = document.getElementById(settingsId);
     this.container = document.getElementById(containerId);
+    
+    this.currentState = {
+      status: "edit"
+    };
+
     this.options = {
       lines: 6,
       fretWidth: 40,
@@ -26,99 +31,10 @@ class TabGenerator {
       isClicked: false,
       currentMeasure: null,
     };
+    
+    console.log(2);
     this.init();
     this.setupDragAndDrop();
-  }
-  setupDragAndDrop() {
-    // Make fret buttons draggable
-    const buttons = this.settings.getElementsByClassName("fret-button");
-    Array.from(buttons).forEach((button) => {
-      button.draggable = true;
-      button.addEventListener("dragstart", (e) => this.handleDragStart(e));
-      button.addEventListener("dragend", () => this.handleDragEnd());
-    });
-    // Make SVG areas droppable
-    this.container.addEventListener("dragover", (e) => this.handleDragOver(e));
-    this.container.addEventListener("drop", (e) => this.handleDrop(e));
-  }
-
-  handleDragStart(e) {
-    this.dragState.isDragging = true;
-    this.dragState.currentFret = e.target.dataset.fret;
-    e.dataTransfer.setData("text/plain", e.target.dataset.fret);
-    e.dataTransfer.effectAllowed = "move";
-  }
-
-  handleDragEnd() {
-    const button = this.settings.querySelector(
-      `button[data-fret="${this.dragState.currentFret}"]`
-    );
-    if (button) {
-      button.style.backgroundColor = "";
-      button.style.color = "";
-    }
-
-    this.dragState.isDragging = false;
-    this.dragState.currentFret = null;
-  }
-
-  handleDragOver(e) {
-    e.preventDefault();
-    if (this.dragState.isDragging) {
-      // Get the position
-      const position = this.calculateNotePosition(e);
-
-      // Get the current fret button
-      const button = this.settings.querySelector(
-        `button[data-fret="${this.dragState.currentFret}"]`
-      );
-
-      // Check if position is over a line (stringIndex is valid)
-      if (
-        position &&
-        position.measureIndex >= 0 &&
-        position.measureIndex < this.options.measures &&
-        position.stringIndex >= 0 &&
-        position.stringIndex < this.options.lines
-      ) {
-        // Change button color when over a line
-        if (button) {
-          button.style.backgroundColor = "#4CAF50"; // Green
-          button.style.color = "white";
-        }
-
-        // Store state with valid position
-        this.tabState.push({
-          id: this.tabState.length + 1,
-          options: {
-            x: position.x,
-            y: position.y,
-            measureIndex: position.measureIndex,
-            fret: this.dragState.currentFret,
-          },
-        });
-      } else {
-        // Reset button color when not over a line
-        if (button) {
-          button.style.backgroundColor = ""; // Default color
-          button.style.color = "";
-        }
-      }
-    }
-  }
-
-  handleDrop(e) {
-    e.preventDefault();
-    const fret = e.dataTransfer.getData("text/plain");
-    const position = this.calculateNotePosition(e);
-    if (position) {
-      this.addNote(
-        position.measureIndex,
-        position.stringIndex,
-        fret,
-        position.x
-      );
-    }
   }
 
   calculateNotePosition(e) {
@@ -159,7 +75,7 @@ class TabGenerator {
     const svg = this.container.getElementsByClassName(this.options.svgClass)[
       measureIndex
     ];
-    console.log(svg)
+    console.log(svg);
     // Create a container div for the menu that will be positioned absolutely
     const menuContainer = document.createElement("div");
     menuContainer.style.position = "absolute";
@@ -287,13 +203,26 @@ class TabGenerator {
     this.container.style.position = "relative";
     this.container.style.fontFamily = "monospace";
     this.container.style.userSelect = "none";
-
+    console.log(this.currentState);
+    this.stateInitialicer();
     this.createTab();
     this.generateSettings();
 
     this.container.addEventListener("contextmenu", (e) => e.preventDefault());
   }
 
+  /* Init Functions */
+  stateInitialicer() {
+    console.log("asda")
+    console.log(this.currentState);
+    // if (this.currentState.status === "edit") {
+    //   const title = document.querySelector(".current-state");
+    //   title.textContent = "Edit Mode";
+    //   const options = document.querySelector(".options-menu");
+    //   options.style.display = "block";
+
+    // }
+  }
   generateSettings() {
     // Generate buttons for frets 0 to 24
     for (let fret = 0; fret <= 24; fret++) {
@@ -313,35 +242,6 @@ class TabGenerator {
     addMeasureButton.addEventListener("click", () => this.addMeasure());
 
     this.settings.appendChild(addMeasureButton);
-  }
-
-  handleFretButtonClick(fret) {
-    const actualBtn = document.querySelector(`.fret-${fret}`);
-    const classListActive = "fret-button-clicked";
-    if (this.fretState.isClicked == false) {
-      this.fretState = {
-        isClicked: true,
-        currentFret: fret,
-      };
-      actualBtn.classList.add(classListActive);
-    } else {
-      if (fret === this.fretState.currentFret) {
-        this.fretState = {
-          isClicked: false,
-          currentFret: null,
-        };
-        actualBtn.classList.remove(classListActive);
-      } else {
-        document
-          .querySelector(`.fret-${this.fretState.currentFret}`)
-          .classList.remove(classListActive);
-        actualBtn.classList.add(classListActive);
-        this.fretState = {
-          isClicked: true,
-          currentFret: fret,
-        };
-      }
-    }
   }
 
   createTab() {
@@ -364,6 +264,20 @@ class TabGenerator {
     }
   }
 
+  setupDragAndDrop() {
+    // Make fret buttons draggable
+    const buttons = this.settings.getElementsByClassName("fret-button");
+    Array.from(buttons).forEach((button) => {
+      button.draggable = true;
+      button.addEventListener("dragstart", (e) => this.handleDragStart(e));
+      button.addEventListener("dragend", () => this.handleDragEnd());
+    });
+    // Make SVG areas droppable
+    this.container.addEventListener("dragover", (e) => this.handleDragOver(e));
+    this.container.addEventListener("drop", (e) => this.handleDrop(e));
+  }
+
+  /** UTILS **/
   render() {
     // Clear the container
     this.container.innerHTML = "";
@@ -416,6 +330,120 @@ class TabGenerator {
     });
   }
 
+
+
+
+
+
+  /** Actions */
+  handleFretButtonClick(fret) {
+    const actualBtn = document.querySelector(`.fret-${fret}`);
+    const classListActive = "fret-button-clicked";
+    if (this.fretState.isClicked == false) {
+      this.fretState = {
+        isClicked: true,
+        currentFret: fret,
+      };
+      actualBtn.classList.add(classListActive);
+    } else {
+      if (fret === this.fretState.currentFret) {
+        this.fretState = {
+          isClicked: false,
+          currentFret: null,
+        };
+        actualBtn.classList.remove(classListActive);
+      } else {
+        document
+          .querySelector(`.fret-${this.fretState.currentFret}`)
+          .classList.remove(classListActive);
+        actualBtn.classList.add(classListActive);
+        this.fretState = {
+          isClicked: true,
+          currentFret: fret,
+        };
+      }
+    }
+  }
+
+  handleDragStart(e) {
+    this.dragState.isDragging = true;
+    this.dragState.currentFret = e.target.dataset.fret;
+    e.dataTransfer.setData("text/plain", e.target.dataset.fret);
+    e.dataTransfer.effectAllowed = "move";
+  }
+
+  handleDragEnd() {
+    const button = this.settings.querySelector(
+      `button[data-fret="${this.dragState.currentFret}"]`
+    );
+    if (button) {
+      button.style.backgroundColor = "";
+      button.style.color = "";
+    }
+
+    this.dragState.isDragging = false;
+    this.dragState.currentFret = null;
+  }
+
+  handleDragOver(e) {
+    e.preventDefault();
+    if (this.dragState.isDragging) {
+      // Get the position
+      const position = this.calculateNotePosition(e);
+
+      // Get the current fret button
+      const button = this.settings.querySelector(
+        `button[data-fret="${this.dragState.currentFret}"]`
+      );
+
+      // Check if position is over a line (stringIndex is valid)
+      if (
+        position &&
+        position.measureIndex >= 0 &&
+        position.measureIndex < this.options.measures &&
+        position.stringIndex >= 0 &&
+        position.stringIndex < this.options.lines
+      ) {
+        // Change button color when over a line
+        if (button) {
+          button.style.backgroundColor = "#4CAF50"; // Green
+          button.style.color = "white";
+        }
+
+        // Store state with valid position
+        this.tabState.push({
+          id: this.tabState.length + 1,
+          options: {
+            x: position.x,
+            y: position.y,
+            measureIndex: position.measureIndex,
+            fret: this.dragState.currentFret,
+          },
+        });
+      } else {
+        // Reset button color when not over a line
+        if (button) {
+          button.style.backgroundColor = ""; // Default color
+          button.style.color = "";
+        }
+      }
+    }
+  }
+
+  handleDrop(e) {
+    e.preventDefault();
+    const fret = e.dataTransfer.getData("text/plain");
+    const position = this.calculateNotePosition(e);
+    if (position) {
+      this.addNote(
+        position.measureIndex,
+        position.stringIndex,
+        fret,
+        position.x
+      );
+    }
+  }
+
   handleEditMeasure(e) {
     const measureSelected = e.target;
     measureSelected.style.opacity = ".3z";
@@ -429,11 +457,11 @@ class TabGenerator {
     this.options.measures--;
   }
   handleLineClick(e) {
-    console.log(e)
+    console.log(e);
     if (this.fretState.isClicked) {
       const position = this.calculateNotePosition(e);
       if (position) {
-        console.log(position)
+        console.log(position);
         this.addNote(
           position.measureIndex,
           position.stringIndex,
