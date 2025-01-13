@@ -96,6 +96,37 @@
   opacity: 1;
 }
 
+
+.options{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-edit{
+  padding:7.5px 0px;
+  width: 100px;
+  box-shadow: 1px 1px rgba(22,22, 22, 0.2);
+  transition: all 75ms linear;
+  border: 1px solid rgb(22, 22, 22);
+}
+  
+.btn-edit:hover{
+  box-shadow: 2px 2px rgb(22, 22, 22);
+}
+.btn-save{
+  background-color: rgba(151, 255, 173, 0.3);
+}
+.btn-save:hover{
+  background-color: rgba(151, 255, 173, 0.8);
+}
+.btn-reset{
+  background-color: rgba(255, 127, 127, 0.3);
+}
+.btn-reset:hover{
+  background-color: rgba(255, 127, 127, 0.8);
+}
 /*.string-0 {
   stroke: #ff0000; 
 }

@@ -60,8 +60,8 @@ class TabGenerator {
 
   stateInitialiser(){
     if (this.currentState.state === "edit"){
-      const edit = document.querySelector(".options-menu");
-      edit.style.display = "block";
+      const edit = document.querySelector(".options");
+      edit.style.display = "flex";
       const currentText = document.querySelector(".text-current-state");
       currentText.textContent = "EDIT MODE";
     }else if(this.currentState.state === "play"){
