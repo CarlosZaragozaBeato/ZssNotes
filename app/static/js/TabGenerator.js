@@ -51,6 +51,7 @@ class TabGenerator {
     this.container.style.fontFamily = "monospace";
     this.container.style.userSelect = "none";
 
+
     this.stateInitialiser();
     this.createTab();
     this.generateSettings();
@@ -59,17 +60,34 @@ class TabGenerator {
   }
 
   stateInitialiser(){
+    document.querySelector("#change_mode").addEventListener('click', (e) => this.handleChangeMode());
+    
+
     if (this.currentState.state === "edit"){
       const edit = document.querySelector(".options");
       edit.style.display = "flex";
       const currentText = document.querySelector(".text-current-state");
       currentText.textContent = "EDIT MODE";
+      this.editModeSettings();
+    
     }else if(this.currentState.state === "play"){
       const view = document.querySelector(".play-menu");
       view.style.display = "block";
       const currentText = document.querySelector(".text-current-state");
       currentText.textContent = "PLAY MODE";
     }
+  }
+
+  editModeSettings(){
+    console.log("EDIT MODE SETTINGS");
+    /*** Events ***/
+    // Load
+    // document.querySelector("#handleLoadButton").addEventListener('click', () => this.handleClickLoad());
+    // Save 
+    document.querySelector("#handleSaveButton").addEventListener('click', () => this.handleClickSave());
+    // Reset
+    document.querySelector("#handleResetButton").addEventListener('click', () => this.handleClickRemove());
+    /** **/
   }
 
   generateSettings() {
@@ -267,6 +285,8 @@ class TabGenerator {
     svg.appendChild(text);
 
     // Store note in state with menu container reference
+    console.log(this.tabState[measureIndex])
+    
     this.tabState[measureIndex].tabs.push({
       stringIndex,
       fret,
@@ -380,15 +400,6 @@ class TabGenerator {
           this.fretState.currentFret,
           position.x
         );
-        this.tabState.push({
-          id: this.tabState.length + 1,
-          options: {
-            x: position.x,
-            y: position.y,
-            measureIndex: position.measureIndex,
-            fret: this.fretState.currentFret,
-          },
-        });
         document
           .querySelector(`.fret-${this.fretState.currentFret}`)
           .classList.remove("fret-button-clicked");
@@ -443,17 +454,6 @@ class TabGenerator {
           button.style.backgroundColor = "#4CAF50"; // Green
           button.style.color = "white";
         }
-
-        // Store state with valid position
-        this.tabState.push({
-          id: this.tabState.length + 1,
-          options: {
-            x: position.x,
-            y: position.y,
-            measureIndex: position.measureIndex,
-            fret: this.dragState.currentFret,
-          },
-        });
       } else {
         // Reset button color when not over a line
         if (button) {
@@ -476,5 +476,41 @@ class TabGenerator {
         position.x
       );
     }
+  }
+
+
+  handleClickLoad(){
+    console.log(this.currentState);
+  }
+  handleClickSave(){
+    console.log(this.currentState);
+    document.querySelector(".save_modal").style.display = "flex";
+  }
+  handleClickRemove(){
+    this.currentState = {
+      state: "edit"
+    }
+    this.state = {
+      tabs: [],
+    };
+    this.dragState = {
+      isDragging: false,
+      currentFret: null,
+      currentElement: null,
+    };
+    this.tabState = [];
+    this.fretState = {
+      isClicked: false,
+      currentFret: null,
+    };
+    this.measureState = {
+      isClicked: false,
+      currentMeasure: null,
+    };
+    this.container.innerHTML = ""; 
+  }
+
+  handleChangeMode(){
+
   }
 }

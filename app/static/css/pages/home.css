@@ -13,6 +13,7 @@
 #tab-container {
   width: 100%;
   margin-top: 50px;
+  position: relative;
 }
 #settings-container {
   width: 50%;
@@ -34,7 +35,7 @@
 }
 .options {
   position: fixed;
-  bottom: 0;
+  bottom: 0;  
   left: 0;
   width: 100%;
   background-color: #f9f9f9; /* Adjust the background color as needed */
@@ -95,8 +96,6 @@
 .current-state:hover{
   opacity: 1;
 }
-
-
 .options{
   width: 100%;
   display: flex;
@@ -127,6 +126,51 @@
 .btn-reset:hover{
   background-color: rgba(255, 127, 127, 0.8);
 }
+.container .save_modal {
+  display: none;
+  position: absolute;
+  bottom: 20%;
+  right: 25px;  
+  width: 50%;
+  width: 300px;
+  height:150px;
+  z-index: 1;
+  background-color: var(--color-black-light);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 15px;
+  box-shadow: 8px 8px rgb(0, 0, 0);
+}
+.container .save_modal input{
+  box-shadow: 2px 2px rgb(22, 22, 22);
+  border: 1px solid black;
+  padding:5px;
+  background-color: white;
+  font-size:1.5rem;
+}
+.container .save_modal div {
+  display: flex;
+  gap: 5px;
+  
+}
+.container .save_modal div button {
+  box-shadow: 2px 2px rgb(22, 22, 22);
+  border: 1px solid black;
+  text-align: center;
+  padding:2.5px;
+  
+}
+
+.container .save_modal #btn_save_modal {
+  background-color: rgba(151, 255, 173, 0.8);
+}
+.container .save_modal #btn_close_modal_tab {
+  background-color: rgba(255, 127, 127, 0.8);
+}
+
+
 /*.string-0 {
   stroke: #ff0000; 
 }
